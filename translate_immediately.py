@@ -38,13 +38,7 @@ class ClipboardWatcher(threading.Thread):
             except:
                 try:
                     tmp_value = ImageGrab.grabclipboard()
-                    if type(tmp_value) != type(recent_value):
-                        recent_value = Image.fromarray(np.array(tmp_value))
-                        recent_value = pytesseract.image_to_string(recent_value, lang = 'eng', config = '--psm 7 --oem 3')
-                        print("Image to String: %s" % recent_value)
-                        translated = translator.translate(recent_value, src='en', dest='zh-tw')
-                        Mbox('translator', "\n".join([recent_value, translated.text]), 1)
-                    elif tmp_value.size[0] != recent_value.size[0]:
+                    if type(tmp_value) != type(recent_value) or tmp_value.size[0] != recent_value.size[0]:
                         recent_value = Image.fromarray(np.array(tmp_value))
                         recent_value = pytesseract.image_to_string(recent_value, lang = 'eng', config = '--psm 7 --oem 3')
                         print("Image to String: %s" % recent_value)
