@@ -19,12 +19,19 @@ class ClipboardWatcher(threading.Thread):
     def run(self):
         recent_value = ""
         while True:
-            tmp_value = pyperclip.paste()
-            if tmp_value != recent_value:
-                recent_value = tmp_value
-                print("Value changed: %s" % str(recent_value))
-                translated = translator.translate(str(recent_value), src='en', dest='zh-tw') # tc
-                Mbox('translator', translated.text, 1)
+            try:
+                tmp_value = pyperclip.paste()
+                if tmp_value != recent_value:
+                    recent_value = tmp_value
+                    recent_value = str(recent_value)
+                    print("Value changed: %s" % recent_value)
+                    translated = translator.translate(recent_value, src='en', dest='zh-tw') # tc
+                    Mbox('translator', translated.text, 1)
+            except:
+                print("VALUE CHANGED EXCEPTION: %s" % recent_value)
+                tmp_value = ""
+                recent_value = ""
+                pass
             time.sleep(0.1)
 
     def stop(self):
