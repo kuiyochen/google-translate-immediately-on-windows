@@ -4,14 +4,16 @@ import threading
 
 import pyperclip
 import ctypes
-from googletrans import Translator
+# from googletrans import Translator
+from google_trans_new import google_translator
 from PIL import ImageGrab
 from PIL import Image
 import pytesseract
 # import cv2
 import numpy as np
 
-translator = Translator()
+# translator = Translator()
+translator = google_translator()
 # print(translated.text)
 def Mbox(title, text, style):
     return ctypes.windll.user32.MessageBoxW(0, text, title, style)
@@ -33,21 +35,26 @@ class ClipboardWatcher(threading.Thread):
                     recent_value = tmp_value
                     recent_value = str(recent_value)
                     print("Value changed: %s" % recent_value)
-                    translated = translator.translate(recent_value, src='en', dest='zh-tw') # tc
-                    Mbox('translator', "\n".join([recent_value, translated.text]), 1)
-            except:
+                    # translated = translator.translate(recent_value, src='en', dest='zh-tw') # tc
+                    # Mbox('translator', "\n".join([recent_value, translated.text]), 1)
+                    translated = translator.translate(recent_value, lang_src='en', lang_tgt='zh-tw') # tc
+                    Mbox('translator', "\n".join([recent_value, translated]), 1)
+            except Exception as ex:
+                print(ex)
                 try:
                     tmp_value = ImageGrab.grabclipboard()
                     if type(tmp_value) != type(recent_value) or tmp_value.size[0] != recent_value.size[0]:
                         recent_value = Image.fromarray(np.array(tmp_value))
                         recent_value = pytesseract.image_to_string(recent_value, lang = 'eng', config = '--psm 7 --oem 3')
                         print("Image to String: %s" % recent_value)
-                        translated = translator.translate(recent_value, src='en', dest='zh-tw')
-                        Mbox('translator', "\n".join([recent_value, translated.text]), 1)
+                        # translated = translator.translate(recent_value, src='en', dest='zh-tw')
+                        # Mbox('translator', "\n".join([recent_value, translated.text]), 1)
+                        translated = translator.translate(recent_value, lang_src='en', lang_tgt='zh-tw')
+                        Mbox('translator', "\n".join([recent_value, translated]), 1)
                     recent_value = tmp_value
                 except Exception as ex:
                     print("VALUE CHANGED EXCEPTION: %s" % recent_value)
-                    # print(ex)
+                    print(ex)
                     # os.system("pause")
                     recent_value = tmp_value
                     tmp_value = ""
